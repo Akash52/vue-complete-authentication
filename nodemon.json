@@ -1,0 +1,14 @@
+{
+    "watch":[
+        "src/*",
+        "index.ts"
+    ],
+    "ext":"js,json,ts",
+    "ignore":[
+        ".git",
+        "node_modules",
+        "dist/",
+        "coverage/"
+    ]
+
+}
