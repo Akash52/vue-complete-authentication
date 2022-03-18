@@ -1,6 +1,8 @@
-import { Router } from 'express'
+import { Router, Request, Response } from 'express'
 import { register } from './../controller/auth.controller'
 
-export const routes = (router: Router) => {
-  router.post('api/register', register)
-}
+const router = Router()
+
+router.post('/register', register)
+
+export default router
