@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express'
+import { routes } from './src/Routes/routes'
 
 const app = express()
 
@@ -10,6 +11,8 @@ app.use(express.json())
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello World!')
 })
+
+routes(app)
 
 app.listen(5000, () => {
   console.log(`Server started on port ${PORT} mode ${process.env.NODE_ENV}`)
