@@ -1,3 +1,4 @@
+import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import express from 'express'
 import mongoose from 'mongoose'
@@ -15,6 +16,7 @@ app.use(
     credentials: true,
   })
 )
+app.use(cookieParser())
 
 app.use('/', router)
 

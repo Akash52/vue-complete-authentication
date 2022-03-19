@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { Joi } from 'express-validation'
 import { UserModel } from '../models/user-model'
 import bcryptjs from 'bcryptjs'
-import { sign } from 'jsonwebtoken'
+import { sign, verify } from 'jsonwebtoken'
 
 const registerValidation = Joi.object({
   first_name: Joi.string().required(),
@@ -67,7 +67,7 @@ export const login = async (req: Request, res: Response) => {
     })
   }
 
-  const token = sign({ userId: user._id }, 'secret', { expiresIn: '50d' })
+  const token = sign({ _id: user._id }, 'secret', { expiresIn: '50d' })
 
   res.cookie('token', token, {
     //user logout in 1 day
@@ -79,4 +79,35 @@ export const login = async (req: Request, res: Response) => {
     success: true,
     message: 'User logged in successfully',
   })
+}
+
+export const user = async (req: Request, res: Response) => {
+  const cookie = req.cookies.token
+  if (!cookie) {
+    return res.send({
+      success: false,
+      message: 'No cookie found',
+    })
+  }
+
+  const payload: any = await verify(cookie, 'secret')
+
+  if (!payload) {
+    return res.send({
+      success: false,
+      message: 'Invalid cookie',
+    })
+  }
+
+  const user = await UserModel.findById(payload._id)
+
+  if (!user) {
+    return res.send({
+      success: false,
+      message: 'User not found',
+    })
+  }
+
+  const { password, ...data } = await user.toJSON()
+  res.send(data)
 }
