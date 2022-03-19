@@ -1,5 +1,7 @@
 import { Request, Response } from 'express'
 import { Joi } from 'express-validation'
+import { UserModel } from '../models/user-model'
+import bcryptjs from 'bcryptjs'
 
 const registerValidation = Joi.object({
   first_name: Joi.string().required(),
@@ -7,10 +9,9 @@ const registerValidation = Joi.object({
   email: Joi.string().required(),
   password: Joi.string().required(),
   confirm_password: Joi.string().required(),
-  phone_number: Joi.string().required(),
 })
 
-export const register = (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response) => {
   const body = req.body
   const { error } = registerValidation.validate(body)
 
@@ -20,5 +21,26 @@ export const register = (req: Request, res: Response) => {
       message: error.details[0].message,
     })
   }
-  res.send(body)
+
+  if (body.password !== body.confirm_password) {
+    return res.status(400).json({
+      success: false,
+      message: 'Passwords do not match',
+    })
+  }
+
+  const salt = await bcryptjs.genSalt(10)
+  const hashedPassword = await bcryptjs.hash(body.password, salt)
+
+  const user = new UserModel({
+    first_name: body.first_name,
+    last_name: body.last_name,
+    email: body.email,
+    password: hashedPassword,
+  })
+  const savedUser = await user.save()
+
+  const { password, ...data } = await savedUser.toJSON()
+
+  res.send(data)
 }

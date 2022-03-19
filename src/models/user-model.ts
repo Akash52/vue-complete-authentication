@@ -5,7 +5,6 @@ export interface User extends Document {
   last_name: string
   email: string
   password: string
-  confirm_password?: string
 }
 
 const userSchema = new Schema<User>({
@@ -23,10 +22,6 @@ const userSchema = new Schema<User>({
     required: true,
   },
   password: {
-    type: String,
-    required: true,
-  },
-  confirm_password: {
     type: String,
     required: true,
   },
