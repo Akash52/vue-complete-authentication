@@ -113,3 +113,11 @@ export const user = async (req: Request, res: Response) => {
   const { password, ...data } = await user.toJSON()
   res.send(data)
 }
+
+export const logout = async (req: Request, res: Response) => {
+  res.clearCookie('token')
+  res.send({
+    success: true,
+    message: 'User logged out successfully',
+  })
+}
