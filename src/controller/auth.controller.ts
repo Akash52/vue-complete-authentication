@@ -44,3 +44,29 @@ export const register = async (req: Request, res: Response) => {
 
   res.send(data)
 }
+
+export const login = async (req: Request, res: Response) => {
+  const body = req.body
+
+  const user = await UserModel.findOne({ email: body.email })
+
+  if (!user) {
+    return res.status(400).json({
+      success: false,
+      message: 'User not found',
+    })
+  }
+
+  const isMatch = await bcryptjs.compare(body.password, user.password)
+
+  if (!isMatch) {
+    return res.status(400).json({
+      success: false,
+      message: 'Incorrect password',
+    })
+  }
+
+  const { password, ...data } = await user.toJSON()
+
+  res.send(data)
+}
