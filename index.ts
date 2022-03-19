@@ -1,3 +1,4 @@
+import cors from 'cors'
 import express from 'express'
 import mongoose from 'mongoose'
 import router from './src/Routes/routes'
@@ -8,6 +9,12 @@ const PORT = process.env.PORT || 5000
 
 //express.json() is a middleware that parses the incoming request body and exposes it on req.body
 app.use(express.json())
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  })
+)
 
 app.use('/', router)
 

@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { Joi } from 'express-validation'
 import { UserModel } from '../models/user-model'
 import bcryptjs from 'bcryptjs'
+import { sign } from 'jsonwebtoken'
 
 const registerValidation = Joi.object({
   first_name: Joi.string().required(),
@@ -66,7 +67,16 @@ export const login = async (req: Request, res: Response) => {
     })
   }
 
-  const { password, ...data } = await user.toJSON()
+  const token = sign({ userId: user._id }, 'secret', { expiresIn: '50d' })
 
-  res.send(data)
+  res.cookie('token', token, {
+    //user logout in 1 day
+    expires: new Date(Date.now() + 86400000),
+    httpOnly: true,
+  })
+
+  res.send({
+    success: true,
+    message: 'User logged in successfully',
+  })
 }
