@@ -67,7 +67,9 @@ export const login = async (req: Request, res: Response) => {
     })
   }
 
-  const token = sign({ _id: user._id }, 'secret', { expiresIn: '50d' })
+  const token = sign({ _id: user._id }, process.env.JWT_SECRET || '', {
+    expiresIn: '50d',
+  })
 
   res.cookie('token', token, {
     //user logout in 1 day
@@ -90,7 +92,7 @@ export const user = async (req: Request, res: Response) => {
     })
   }
 
-  const payload: any = await verify(cookie, 'secret')
+  const payload: any = await verify(cookie, process.env.JWT_SECRET || '')
 
   if (!payload) {
     return res.send({
